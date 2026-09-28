@@ -44,7 +44,19 @@ export const Header: React.FC<HeaderProps> = ({
           </div>
 
           {/* Ownership Stats & Actions */}
-          <div className="flex flex-wrap items-center gap-3 sm:gap-4 justify-between md:justify-end">
+          <div className="flex flex-wrap items-center gap-2.5 sm:gap-3.5 justify-between md:justify-end">
+            {/* Auto-save Status Badge */}
+            <div
+              className="flex items-center gap-1.5 px-2.5 py-1.5 text-[11px] font-medium text-emerald-300 bg-emerald-950/50 border border-emerald-800/60 rounded-xl shadow-xs"
+              title="入力された所持情報はブラウザ（Cookieおよびローカルストレージ）に即時保存され、次回アクセス時やリロード時も保持されます"
+            >
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+              </span>
+              <span className="font-medium">自動保存中</span>
+            </div>
+
             {/* Quick Metrics Bar */}
             <div className="flex items-center gap-3 bg-slate-950/80 border border-slate-800 rounded-xl px-3.5 py-2">
               <div className="flex items-center gap-1.5 text-xs text-slate-300">

@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useCallback } from 'react';
+import React, { useState, useMemo, useCallback, useEffect, useRef } from 'react';
 import {
   Character,
   FilterState,
@@ -14,6 +14,11 @@ import {
   buildWikiruUrl,
   extractFtCode,
 } from './utils/tracker';
+import {
+  loadSavedOwnership,
+  saveOwnershipData,
+  clearOwnershipData,
+} from './utils/storage';
 import { Header } from './components/Header';
 import { TrackerGuideBanner } from './components/TrackerGuideBanner';
 import { UrlInputBar } from './components/UrlInputBar';
@@ -42,18 +47,37 @@ import {
 } from 'lucide-react';
 
 export default function App() {
+  // Load saved state from browser storage (localStorage / Cookie / URL)
+  const initialSavedData = useMemo(() => loadSavedOwnership(), []);
+
   const [characterList, setCharacterList] = useState<Character[]>(() => {
+    if (initialSavedData && initialSavedData.ownedIds && initialSavedData.ownedIds.length > 0) {
+      const ownedSet = new Set(initialSavedData.ownedIds);
+      return INITIAL_CHARACTERS.map((c) => ({
+        ...c,
+        isOwned: ownedSet.has(c.imageKey) || ownedSet.has(c.id),
+      }));
+    }
     return INITIAL_CHARACTERS.map((c) => ({
       ...c,
       isOwned: false,
     }));
   });
 
-  const [currentUrl, setCurrentUrl] = useState<string>('');
-  const [currentShareCode, setCurrentShareCode] = useState<string>('');
+  const [currentUrl, setCurrentUrl] = useState<string>(() => initialSavedData?.url || '');
+  const [currentShareCode, setCurrentShareCode] = useState<string>(
+    () => initialSavedData?.shareCode || ''
+  );
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [statusMessage, setStatusMessage] = useState<string>('');
-  const [isCustomized, setIsCustomized] = useState<boolean>(false);
+  const [statusMessage, setStatusMessage] = useState<string>(() => {
+    if (initialSavedData && initialSavedData.ownedIds && initialSavedData.ownedIds.length > 0) {
+      return `前回の所持情報を自動復元しました（所持: ${initialSavedData.ownedIds.length}名）`;
+    }
+    return '';
+  });
+  const [isCustomized, setIsCustomized] = useState<boolean>(
+    () => !!(initialSavedData && initialSavedData.ownedIds && initialSavedData.ownedIds.length > 0)
+  );
 
   // Edit Mode state
   const [isEditMode, setIsEditMode] = useState<boolean>(false);
@@ -176,6 +200,7 @@ export default function App() {
 
   // Reset to default (all unowned and empty url)
   const handleResetToDefault = () => {
+    clearOwnershipData();
     const resetList = INITIAL_CHARACTERS.map((c) => ({
       ...c,
       isOwned: false,
@@ -195,6 +220,29 @@ export default function App() {
     });
     return encodeFtShare(ownedMap, list);
   }, []);
+
+  // Auto-save changes to localStorage and Cookie on state change
+  const isMountedRef = useRef(false);
+  useEffect(() => {
+    if (!isMountedRef.current) {
+      isMountedRef.current = true;
+      return;
+    }
+
+    const ownedList = characterList.filter((c) => c.isOwned);
+    const ownedIds = ownedList.map((c) => c.imageKey);
+
+    if (ownedIds.length > 0) {
+      const code = currentShareCode || generateShareCodeForList(characterList);
+      saveOwnershipData({
+        ownedIds,
+        shareCode: code,
+        url: currentUrl || (code ? buildWikiruUrl(code) : ''),
+      });
+    } else {
+      clearOwnershipData();
+    }
+  }, [characterList, currentShareCode, currentUrl, generateShareCodeForList]);
 
   // Toggle single character ownership
   const handleToggleOwnership = useCallback((char: Character) => {
@@ -231,6 +279,7 @@ export default function App() {
 
   // Confirm Mark All Unowned
   const handleConfirmMarkAllUnowned = useCallback(() => {
+    clearOwnershipData();
     const updated = characterList.map((c) => ({ ...c, isOwned: false }));
     setCharacterList(updated);
     setCurrentShareCode('');
