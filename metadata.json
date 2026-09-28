@@ -1,0 +1,8 @@
+{
+  "name": "ブルーアーカイブ キャラクター所持トラッカー",
+  "description": "ブルーアーカイブ（ブルアカ）攻略Wikiの所持トラッカーURLから生徒情報を取得し、所持・未所持に分けて一覧表示、絞り込み、共有ができるツール",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
