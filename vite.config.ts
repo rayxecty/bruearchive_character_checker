@@ -9,21 +9,37 @@ import { defineConfig, type Plugin } from 'vite';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Plugin to copy index.html to 404.html in dist for GitHub Pages routing support
-function githubPagesSpaPlugin(): Plugin {
+// Plugin to prepare files for GitHub Pages:
+// 1. Generate 404.html from index.html (SPA redirect)
+// 2. Generate .nojekyll (bypasses Jekyll processing)
+// 3. Mirror output into docs/ folder (allows Deploy from branch -> /docs)
+function githubPagesPlugin(): Plugin {
   return {
-    name: 'github-pages-spa',
+    name: 'github-pages-plugin',
     closeBundle() {
       const outDir = path.resolve(__dirname, 'dist');
+      const docsDir = path.resolve(__dirname, 'docs');
       const indexPath = path.resolve(outDir, 'index.html');
       const notFoundPath = path.resolve(outDir, '404.html');
+      const noJekyllDist = path.resolve(outDir, '.nojekyll');
+
       try {
         if (fs.existsSync(indexPath)) {
+          // 1. SPA fallback: 404.html
           fs.copyFileSync(indexPath, notFoundPath);
-          console.log('✓ Generated 404.html for GitHub Pages SPA routing');
+          // 2. Disable Jekyll processing
+          fs.writeFileSync(noJekyllDist, '');
+          console.log('✓ Generated 404.html and .nojekyll in dist');
+
+          // 3. Mirror dist into docs/ for GitHub Pages /docs branch option
+          if (!fs.existsSync(docsDir)) {
+            fs.mkdirSync(docsDir, { recursive: true });
+          }
+          fs.cpSync(outDir, docsDir, { recursive: true });
+          console.log('✓ Mirrored build to docs/ folder for GitHub Pages');
         }
       } catch (err) {
-        console.warn('Could not generate 404.html for GitHub Pages', err);
+        console.warn('GitHub Pages post-build operations warning:', err);
       }
     },
   };
@@ -37,7 +53,7 @@ export default defineConfig(({ command }) => {
 
   return {
     base,
-    plugins: [react(), tailwindcss(), githubPagesSpaPlugin()],
+    plugins: [react(), tailwindcss(), githubPagesPlugin()],
     define: {
       'process.env.GEMINI_API_KEY': JSON.stringify(env.GEMINI_API_KEY || ''),
     },
