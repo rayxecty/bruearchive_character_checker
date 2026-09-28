@@ -201,6 +201,11 @@ export const CharacterDetailModal: React.FC<CharacterDetailModalProps> = ({
                     <Crown className="w-4 h-4" />
                   </div>
                 )}
+                {character.elephCategory === 'gacha_recollect' && (
+                  <div className="p-1.5 rounded-lg bg-rose-950 text-rose-400 border border-rose-600">
+                    <Sparkles className="w-4 h-4" />
+                  </div>
+                )}
                 {character.elephCategory === 'gacha_limited' && (
                   <div className="p-1.5 rounded-lg bg-purple-950 text-purple-400 border border-purple-600">
                     <Sparkles className="w-4 h-4" />

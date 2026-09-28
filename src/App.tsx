@@ -309,6 +309,9 @@ export default function App() {
         case 'gacha_anniv':
           list = list.filter((c) => c.elephCategory === 'gacha_anniv');
           break;
+        case 'gacha_recollect':
+          list = list.filter((c) => c.elephCategory === 'gacha_recollect');
+          break;
         case 'gacha_limited':
           list = list.filter((c) => c.elephCategory === 'gacha_limited');
           break;
@@ -487,6 +490,15 @@ export default function App() {
         characters: [],
       },
       {
+        category: 'gacha_recollect',
+        title: 'リコレクト募集（過去フェス限定）',
+        badgeText: 'リコレクト募集・過去フェス限',
+        badgeClass: 'bg-rose-950 text-rose-300 border-rose-500/80',
+        icon: <Sparkles className="w-4 h-4 text-rose-400" />,
+        description: '元々は周年フェス限定で実装され、現在は「リコレクト募集」枠として獲得可能な生徒たちです（ワカモ、水着ホシノ、ミカ、水着ハナコ、ドレスヒナ）。',
+        characters: [],
+      },
+      {
         category: 'gacha_limited',
         title: '期間限定募集（季節・イベント）',
         badgeText: '期間限定・復刻時のみ',
@@ -532,11 +544,14 @@ export default function App() {
         case 'gacha_anniv':
           groups[7].characters.push(char);
           break;
-        case 'gacha_limited':
+        case 'gacha_recollect':
           groups[8].characters.push(char);
           break;
-        case 'gacha_collab':
+        case 'gacha_limited':
           groups[9].characters.push(char);
+          break;
+        case 'gacha_collab':
+          groups[10].characters.push(char);
           break;
         default:
           groups[6].characters.push(char);

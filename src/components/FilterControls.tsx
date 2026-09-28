@@ -145,6 +145,11 @@ export const FilterControls: React.FC<FilterControlsProps> = ({
       icon: <Crown className="w-3.5 h-3.5 text-amber-400" />,
     },
     {
+      key: 'gacha_recollect',
+      label: '✨ リコレクト募集（過去フェス限定）',
+      icon: <Sparkles className="w-3.5 h-3.5 text-rose-400" />,
+    },
+    {
       key: 'gacha_limited',
       label: '⏳ 期間限定募集',
       icon: <Sparkles className="w-3.5 h-3.5 text-purple-400" />,
@@ -462,6 +467,18 @@ export const FilterControls: React.FC<FilterControlsProps> = ({
         >
           <Crown className="w-3 h-3 text-amber-400" />
           <span>フェス限定</span>
+        </button>
+        <button
+          type="button"
+          onClick={() => onFilterChange({ elephFilter: 'gacha_recollect' })}
+          className={`flex items-center gap-1 px-2.5 py-1 rounded-lg font-medium transition-all shrink-0 cursor-pointer ${
+            filters.elephFilter === 'gacha_recollect'
+              ? 'bg-rose-600 text-white font-bold shadow-sm ring-1 ring-rose-400'
+              : 'bg-slate-900 text-rose-300/80 border border-rose-900/60 hover:border-rose-700'
+          }`}
+        >
+          <Sparkles className="w-3 h-3 text-rose-400" />
+          <span>リコレクト募集</span>
         </button>
         <button
           type="button"

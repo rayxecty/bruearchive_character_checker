@@ -80,6 +80,12 @@ export const StatsModal: React.FC<StatsModalProps> = ({ characters, isOpen, onCl
       color: 'bg-amber-500',
     },
     {
+      key: 'gacha_recollect',
+      label: 'リコレクト募集（過去フェス限定）',
+      icon: <Sparkles className="w-3.5 h-3.5 text-rose-400" />,
+      color: 'bg-rose-500',
+    },
+    {
       key: 'gacha_limited',
       label: '期間限定募集',
       icon: <Sparkles className="w-3.5 h-3.5 text-purple-400" />,

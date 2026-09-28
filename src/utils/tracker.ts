@@ -26,8 +26,9 @@ export interface Character {
     | 'shop_joint'
     | 'event'
     | 'gacha_regular'
-    | 'gacha_limited'
     | 'gacha_anniv'
+    | 'gacha_recollect'
+    | 'gacha_limited'
     | 'gacha_collab';
   elephMethodLabel?: string;
   elephMethodPriority?: number;

@@ -133,6 +133,12 @@ export const CharacterCard: React.FC<CharacterCardProps> = ({
           label: 'フェス限定',
           classes: 'bg-amber-950/80 text-amber-300 border-amber-600/70 ring-1 ring-amber-500/20',
         };
+      case 'gacha_recollect':
+        return {
+          icon: <Sparkles className="w-3 h-3 text-rose-400" />,
+          label: 'リコレクト募集',
+          classes: 'bg-rose-950/80 text-rose-300 border-rose-600/70 ring-1 ring-rose-500/20',
+        };
       case 'gacha_limited':
         return {
           icon: <Sparkles className="w-3 h-3 text-purple-300" />,

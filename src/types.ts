@@ -25,6 +25,7 @@ export type ElephFilter =
   | 'gacha' // 募集限定（全体）
   | 'gacha_regular' // 通常募集
   | 'gacha_anniv' // フェス限定
+  | 'gacha_recollect' // リコレクト募集（過去フェス限定）
   | 'gacha_limited' // 期間限定
   | 'gacha_collab'; // コラボ限定
 
