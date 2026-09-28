@@ -17,6 +17,7 @@ import {
   CircleDashed,
 } from 'lucide-react';
 import { Character } from '../types';
+import { getCharacterIconUrl, getDirectWikiruImageUrl } from '../utils/imageUrl';
 
 interface CharacterCardProps {
   character: Character;
@@ -156,9 +157,18 @@ export const CharacterCard: React.FC<CharacterCardProps> = ({
 
   const elephBadge = getElephBadge();
 
-  const imageUrl = character.iconPath
-    ? `/api/proxy-image?path=${encodeURIComponent(character.iconPath)}`
-    : '';
+  const [currentImgSrc, setCurrentImgSrc] = useState<string>(() =>
+    getCharacterIconUrl(character.iconPath)
+  );
+
+  const handleImageError = () => {
+    const directUrl = getDirectWikiruImageUrl(character.iconPath);
+    if (currentImgSrc !== directUrl && directUrl) {
+      setCurrentImgSrc(directUrl);
+    } else {
+      setImageError(true);
+    }
+  };
 
   const handleClick = (e: React.MouseEvent) => {
     if (isEditMode) {
@@ -240,12 +250,13 @@ export const CharacterCard: React.FC<CharacterCardProps> = ({
       <div className="px-2.5 py-1.5 flex flex-col items-center">
         {/* Avatar Container */}
         <div className="relative w-18 h-18 sm:w-20 sm:h-20 rounded-xl overflow-hidden bg-slate-800/80 border border-slate-700/60 group-hover:scale-105 transition-transform duration-200">
-          {!imageError && imageUrl ? (
+          {!imageError && currentImgSrc ? (
             <img
-              src={imageUrl}
+              src={currentImgSrc}
               alt={character.name}
               loading="lazy"
-              onError={() => setImageError(true)}
+              referrerPolicy="no-referrer"
+              onError={handleImageError}
               className={`w-full h-full object-cover transition-all ${
                 isOwned ? 'filter-none' : 'grayscale-[30%] contrast-90 group-hover:grayscale-0'
               }`}

@@ -17,6 +17,7 @@ import {
   Users,
 } from 'lucide-react';
 import { Character } from '../types';
+import { getCharacterIconUrl, getDirectWikiruImageUrl } from '../utils/imageUrl';
 
 interface CharacterDetailModalProps {
   character: Character | null;
@@ -32,9 +33,24 @@ export const CharacterDetailModal: React.FC<CharacterDetailModalProps> = ({
   if (!character) return null;
 
   const isOwned = !!character.isOwned;
-  const imageUrl = character.iconPath
-    ? `/api/proxy-image?path=${encodeURIComponent(character.iconPath)}`
-    : '';
+  const [imageError, setImageError] = React.useState(false);
+  const [currentImgSrc, setCurrentImgSrc] = React.useState<string>(() =>
+    getCharacterIconUrl(character.iconPath)
+  );
+
+  React.useEffect(() => {
+    setImageError(false);
+    setCurrentImgSrc(getCharacterIconUrl(character.iconPath));
+  }, [character.iconPath]);
+
+  const handleImageError = () => {
+    const directUrl = getDirectWikiruImageUrl(character.iconPath);
+    if (currentImgSrc !== directUrl && directUrl) {
+      setCurrentImgSrc(directUrl);
+    } else {
+      setImageError(true);
+    }
+  };
 
   const wikiruStudentUrl = `https://bluearchive.wikiru.jp/?${encodeURIComponent(character.name)}`;
 
@@ -80,10 +96,12 @@ export const CharacterDetailModal: React.FC<CharacterDetailModalProps> = ({
           {/* Student Header */}
           <div className="flex items-start gap-4">
             <div className="relative w-22 h-22 rounded-2xl overflow-hidden bg-slate-800 border border-slate-700 shadow-md shrink-0">
-              {imageUrl ? (
+              {!imageError && currentImgSrc ? (
                 <img
-                  src={imageUrl}
+                  src={currentImgSrc}
                   alt={character.name}
+                  referrerPolicy="no-referrer"
+                  onError={handleImageError}
                   className="w-full h-full object-cover"
                 />
               ) : (

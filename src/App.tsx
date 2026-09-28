@@ -102,12 +102,18 @@ export default function App() {
     setIsLoading(true);
     setStatusMessage('');
 
-    try {
-      // First try calling backend API for live validation / extraction
-      const ftParam = extractFtCode(inputStr);
-      const res = await fetch(
-        `/api/tracker?url=${encodeURIComponent(inputStr)}&ft=${encodeURIComponent(ftParam)}`
-      );
+    const isStaticHost =
+      typeof window !== 'undefined' &&
+      (window.location.hostname.endsWith('github.io') ||
+        window.location.protocol === 'file:');
+
+    if (!isStaticHost) {
+      try {
+        // First try calling backend API for live validation / extraction
+        const ftParam = extractFtCode(inputStr);
+        const res = await fetch(
+          `/api/tracker?url=${encodeURIComponent(inputStr)}&ft=${encodeURIComponent(ftParam)}`
+        );
 
       if (res.ok) {
         const data = await res.json();
@@ -144,6 +150,7 @@ export default function App() {
       }
     } catch {
       // Backend error fallback to local codec
+    }
     }
 
     // Client-side fallback codec
